@@ -4,7 +4,7 @@ WORKDIR /app
 ADD . .
 RUN make build
 
-FROM centurylink/ca-certs
+FROM alpine:3
 MAINTAINER Daniel Martins <daniel.martins@jusbrasil.com.br>
 
 COPY --from=build /app/bin/pingdom-exporter /pingdom-exporter
