@@ -3,7 +3,7 @@ package pingdom
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 )
@@ -114,7 +114,7 @@ func decodeResponse(r *http.Response, v interface{}) error {
 		return fmt.Errorf("nil interface provided to decodeResponse")
 	}
 
-	bodyBytes, _ := ioutil.ReadAll(r.Body)
+	bodyBytes, _ := io.ReadAll(r.Body)
 	bodyString := string(bodyBytes)
 	err := json.Unmarshal([]byte(bodyString), &v)
 	return err
@@ -128,7 +128,7 @@ func validateResponse(r *http.Response) error {
 		return nil
 	}
 
-	bodyBytes, _ := ioutil.ReadAll(r.Body)
+	bodyBytes, _ := io.ReadAll(r.Body)
 	bodyString := string(bodyBytes)
 	m := &errorJSONResponse{}
 	err := json.Unmarshal([]byte(bodyString), &m)

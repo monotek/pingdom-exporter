@@ -10,8 +10,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jusbrasil/pingdom-exporter/pkg/pingdom"
+	"github.com/monotek/pingdom-exporter/pkg/pingdom-exporter"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
@@ -22,7 +23,6 @@ var (
 	token             string
 	tags              string
 	metricsPath       string
-	waitSeconds       int
 	port              int
 	outageCheckPeriod int
 	defaultUptimeSLO  float64
@@ -209,7 +209,7 @@ func (pc pingdomCollector) Collect(ch chan<- prometheus.Metric) {
 			for _, state := range states {
 				switch state.Status {
 				case "down":
-					downCount = downCount + 1
+					downCount++
 					downTime = downTime + float64(state.ToTime-state.FromTime)
 				case "up":
 					upTime = upTime + float64(state.ToTime-state.FromTime)
@@ -299,19 +299,22 @@ func main() {
 
 	registry.MustRegister(
 		collector,
-		prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{}),
-		prometheus.NewGoCollector(),
+		collectors.NewProcessCollector(collectors.ProcessCollectorOpts{}),
+		collectors.NewGoCollector(),
 	)
 
 	http.Handle(metricsPath, promhttp.HandlerFor(registry, promhttp.HandlerOpts{}))
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(`<html>
-             <head><title>Pingdom Exporter</title></head>
-             <body>
-             <h1>Pingdom Exporter</h1>
-             <p><a href='` + metricsPath + `'>Metrics</a></p>
-             </body>
-             </html>`))
+		_, err := w.Write([]byte(`<html>
+			 <head><title>Pingdom Exporter</title></head>
+			 <body>
+			 <h1>Pingdom Exporter</h1>
+			 <p><a href='` + metricsPath + `'>Metrics</a></p>
+			 </body>
+			 </html>`))
+		if err != nil {
+			http.Error(w, "Unable to write response", http.StatusInternalServerError)
+		}
 	})
 
 	fmt.Fprintf(os.Stdout, "Pingdom Exporter %v listening on http://0.0.0.0:%v\n", VERSION, port)

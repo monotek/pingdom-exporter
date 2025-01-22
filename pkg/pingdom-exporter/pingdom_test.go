@@ -2,7 +2,7 @@ package pingdom
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -88,7 +88,7 @@ func TestValidateResponse(t *testing.T) {
 	valid := &http.Response{
 		Request:    &http.Request{},
 		StatusCode: http.StatusOK,
-		Body:       ioutil.NopCloser(strings.NewReader("OK")),
+		Body:       io.NopCloser(strings.NewReader("OK")),
 	}
 
 	assert.NoError(t, validateResponse(valid))
@@ -96,7 +96,7 @@ func TestValidateResponse(t *testing.T) {
 	invalid := &http.Response{
 		Request:    &http.Request{},
 		StatusCode: http.StatusBadRequest,
-		Body: ioutil.NopCloser(strings.NewReader(`{
+		Body: io.NopCloser(strings.NewReader(`{
 			"error" : {
 				"statuscode": 400,
 				"statusdesc": "Bad Request",

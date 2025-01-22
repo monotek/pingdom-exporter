@@ -3,7 +3,8 @@ package pingdom
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
+	"log"
 )
 
 // OutageSummaryService provides an interface to Pingdom outage summary.
@@ -33,7 +34,11 @@ func (os *OutageSummaryService) List(checkID int, params ...map[string]string) (
 		return nil, err
 	}
 
-	bodyBytes, _ := ioutil.ReadAll(resp.Body)
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Println("Error reading response body:", err)
+		return nil, err
+	}
 	bodyString := string(bodyBytes)
 	m := &listOutageSummaryJSONResponse{}
 	err = json.Unmarshal([]byte(bodyString), &m)
