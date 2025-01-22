@@ -1,0 +1,60 @@
+---
+name: ci
+
+permissions: read-all
+
+on:
+  pull_request:
+
+jobs:
+  super-linter:
+    permissions:
+      statuses: write
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Lint Code Base
+        uses: github/super-linter/slim@v6
+        env:
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_SHELL_SHFMT: false
+
+  docker-build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build
+        id: docker_build
+        uses: docker/build-push-action@v6
+        with:
+          platforms: linux/amd64
+          push: false
+
+  dependabot-auto-merge:
+    needs:
+      - docker-build
+      - super-linter
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-24.04
+    if: github.actor == 'dependabot[bot]'
+    steps:
+      - name: Enable auto-merge for Dependabot PRs
+        run: gh pr merge --auto --merge "$PR_URL"
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
