@@ -51,11 +51,11 @@ type CheckResponse struct {
 	LastErrorTime            int64               `json:"lasterrortime,omitempty"`
 	LastTestTime             int64               `json:"lasttesttime,omitempty"`
 	LastResponseTime         int64               `json:"lastresponsetime,omitempty"`
-	IntegrationIds           []int               `json:"integrationids,omitempty"`
+	IntegrationIDs           []int               `json:"integrationids,omitempty"`
 	SeverityLevel            string              `json:"severity_level,omitempty"`
 	Type                     CheckResponseType   `json:"type,omitempty"`
 	Tags                     []CheckResponseTag  `json:"tags,omitempty"`
-	UserIds                  []int               `json:"userids,omitempty"`
+	UserIDs                  []int               `json:"userids,omitempty"`
 	Teams                    []CheckTeamResponse `json:"teams,omitempty"`
 	ResponseTimeThreshold    int                 `json:"responsetime_threshold,omitempty"`
 	ProbeFilters             []string            `json:"probe_filters,omitempty"`
