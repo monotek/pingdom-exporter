@@ -1,4 +1,4 @@
-module github.com/monotek/pingdom-exporter
+module github.com/jusbrasil/pingdom-exporter
 
 require (
 	github.com/prometheus/client_golang v1.20.5
