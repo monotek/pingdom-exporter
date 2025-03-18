@@ -11,22 +11,34 @@ func TestErrorError(t *testing.T) {
 	assert.Equal(t, "200 OK: Message", errorResponse.Error())
 }
 
-func TestCheckResponseTagsString(t *testing.T) {
-	checkResponse := CheckResponse{
-		Tags: []CheckResponseTag{
-			{
+func TestCheckResponseAllTags(t *testing.T) {
+	testCases := []struct {
+		tag      CheckResponseTag
+		expected bool
+	}{
+		{
+			tag: CheckResponseTag{
 				Name:  "apache",
 				Type:  "a",
 				Count: 2,
 			},
-			{
+		},
+		{
+			tag: CheckResponseTag{
 				Name:  "server",
 				Type:  "a",
 				Count: 2,
 			},
 		},
 	}
-	assert.Equal(t, "apache,server", checkResponse.TagsString())
+
+	for _, testCase := range testCases {
+		response := CheckResponse{
+			Tags: []CheckResponseTag{testCase.tag},
+		}
+		actual := response.AllTags()
+		assert.Equal(t, actual[0].Name, testCase.tag.Name)
+	}
 }
 
 func TestHasIgnoredTag(t *testing.T) {

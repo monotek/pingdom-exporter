@@ -7,7 +7,6 @@ import (
 	"os"
 	"regexp"
 	"strconv"
-	"strings"
 )
 
 // Uptime SLO tag format.
@@ -78,7 +77,7 @@ type CheckResponseType struct {
 type CheckResponseTag struct {
 	Name  string      `json:"name"`
 	Type  string      `json:"type"`
-	Count interface{} `json:"count"`
+	Count float64     `json:"count"`
 }
 
 // SummaryPerformanceResponse represents the JSON response for a summary performance from the Pingdom API.
@@ -162,13 +161,9 @@ func (r *Error) Error() string {
 	return fmt.Sprintf("%d %v: %v", r.StatusCode, r.StatusDesc, r.Message)
 }
 
-// TagsString returns the check tags as a comma-separated string.
-func (cr *CheckResponse) TagsString() string {
-	var tagsRaw []string
-	for _, tag := range cr.Tags {
-		tagsRaw = append(tagsRaw, tag.Name)
-	}
-	return strings.Join(tagsRaw, ",")
+// Tags returns the check tags.
+func (cr *CheckResponse) AllTags() []CheckResponseTag {
+	return cr.Tags
 }
 
 // HasIgnoreTag returns true if the tag "pingdom_exporter_ignored" exists for
