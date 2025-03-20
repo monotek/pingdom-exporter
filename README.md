@@ -77,6 +77,7 @@ on how to build your own image and push it to your private registry.
 | `pingdom_up_seconds`                                | Total up time within the outage check period, in seconds                        |
 | `pingdom_uptime_slo_error_budget_total_seconds`     | Maximum number of allowed downtime, in seconds, according to the uptime SLO     |
 | `pingdom_uptime_slo_error_budget_available_seconds` | Number of seconds of downtime we can still have without breaking the uptime SLO |
+| `pingdom_tags`                                      | The current tags of the check                                                   |
 
 ## Development
 
